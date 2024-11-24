@@ -1,0 +1,24 @@
+name: CI/CD for Streamlit App
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Build Docker image
+        run: |
+          docker build -t tomato-prediction-streamlit .
+
+      - name: Test Docker image
+        run: |
+          docker run -p 8501:8501 -d tomato-prediction-streamlit
+          sleep 10
+          curl -f http://localhost:8501 || exit 1
